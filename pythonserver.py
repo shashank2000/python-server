@@ -2,7 +2,6 @@ from flask import Flask
 import requests
 import json
 from bs4 import BeautifulSoup
-import re
 
 app = Flask(__name__)
 
@@ -22,8 +21,11 @@ def hello():
         billno = item['bill_number']
         googlepage = requests.get("https://www.google.com/search?q="+billno)
         soup = BeautifulSoup(googlepage.content)
-        aboutStuff = soup.find(id="resultStats").text
-        associatedNumber = re.search('(?<=About ).*(?= results)', (aboutStuff)).group(0).replace(',', '')
+        if soup.find(id="resultStats"):
+            aboutStuff = soup.find(id="resultStats").text
+            associatedNumber = aboutStuff.split("About ")[1].split(" results")[0].replace(',', '')
+        else:
+            associatedNumber = 1
         myDict[billDescription] = int(associatedNumber)
     sorted_dict = sorted(myDict, reverse=True)
     return json.dumps(sorted_dict)
