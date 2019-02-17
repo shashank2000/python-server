@@ -1,4 +1,4 @@
-from flask import Flask                                        
+from flask import Flask
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -11,7 +11,6 @@ BILLS = 'bills'
 DESCRIPTION = 'description'
 GOOGLE_API_KEY = 'AIzaSyA6msAMADzxXZxANboADutjj6RkQSPAyuA'
 
-
 @app.route("/")
 def hello():
     header_data = {'X-API-Key' : 'uxPHJm5m3RLJn1UrnpcX6VkNNFsCALUmv5xb3Mvb'}
@@ -22,16 +21,12 @@ def hello():
         billDescription = item[DESCRIPTION]
         billno = item['bill_number']
         googlepage = requests.get("https://www.google.com/search?q="+billno)
-        soup = BeautifulSoup(googlepage.content, "lxml")
+        soup = BeautifulSoup(googlepage.content)
         aboutStuff = soup.find(id="resultStats").text
-        associatedNumber = (re.search('(?<=About ).*(?= results)', (aboutStuff)).group(0).replace(',', '')) # also convert to int
-        #fix the billDescription stuff
-        #myDict[billDescription] = int(associatedNumber)
-    
-    #print sorted(myDict, reverse=True)
-    #print "sorted"
-
-    return sorted(myDict, reverse=True)
+        associatedNumber = re.search('(?<=About ).*(?= results)', (aboutStuff)).group(0).replace(',', '')
+        myDict[billDescription] = int(associatedNumber)
+    sorted_dict = sorted(myDict, reverse=True)
+    return json.dumps(sorted_dict)
 
 @app.route("/latlng/<lat>/<lng>")
 def latlng(lat, lng):
