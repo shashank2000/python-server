@@ -44,9 +44,9 @@ def latlng(lat, lng):
     header_data = {'X-API-Key' : '2e1uvo7yeX50ZGHvctPxi8ZWubhggyOydIWvOa5c'}
     base_url = 'https://q4ktfaysw3.execute-api.us-east-1.amazonaws.com/treehacks/legislators'
     url = base_url + "?address=" + first_address + "&level=" + level
-    print(url)
     data = requests.get(url, headers=header_data)
-    return json.loads(data.text)
+    json_output = json.loads(data.text)
+    return get_serialized_data(json_output)
 
 # Input the return value from latlng to this function to get the first address as a string
 def get_first_address(data):
@@ -54,8 +54,13 @@ def get_first_address(data):
     first_address = json_response['results'][0]['formatted_address']
     return first_address
 
-output = latlng(40,-120)
-officials = output['officials']
-#for official in officials:
-#    pass
-print(len(officials))
+def get_serialized_data(data):
+    officials = data['officials']
+    officials_data = []
+    for official in officials:
+        official_dict = {}
+        official_dict['name'] = official['first_name'] + ' ' + official['last_name']
+        official_dict['phone_number'] = official['office_location']['phone_1']
+        official_dict['state'] = official['office_details']['district']['state']
+        officials_data.append(official_dict)
+    return officials_data
