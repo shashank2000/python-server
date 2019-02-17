@@ -1,7 +1,6 @@
 from flask import Flask                                        
 import requests
 import json
-from textblob import TextBlob
 from bs4 import BeautifulSoup
 import re
 
@@ -27,11 +26,10 @@ def hello():
         aboutStuff = soup.find(id="resultStats").text
         associatedNumber = (re.search('(?<=About ).*(?= results)', (aboutStuff)).group(0).replace(',', '')) # also convert to int
         #fix the billDescription stuff
-        print billDescription 
-        myDict[billDescription] = int(associatedNumber)
+        #myDict[billDescription] = int(associatedNumber)
     
-    print sorted(myDict, reverse=True)
-    print "sorted"
+    #print sorted(myDict, reverse=True)
+    #print "sorted"
 
     return sorted(myDict, reverse=True)
 
