@@ -33,13 +33,29 @@ Lucas' API
 host this on heroku/serveo/ngrok
 '''
 
-
 @app.route("/latlng/<lat>/<lng>")
 def latlng(lat, lng):
     data = requests.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + str(lat) + ',' + str(lng)+ '&key='+ GOOGLE_API_KEY)
-    return data.text
+
+    # Phone2Action
+    first_address = get_first_address(data.text)
+    # Get senate data
+    level = 'NATIONAL_UPPER'
+    header_data = {'X-API-Key' : '2e1uvo7yeX50ZGHvctPxi8ZWubhggyOydIWvOa5c'}
+    base_url = 'https://q4ktfaysw3.execute-api.us-east-1.amazonaws.com/treehacks/legislators'
+    url = base_url + "?address=" + first_address + "&level=" + level
+    print(url)
+    data = requests.get(url, headers=header_data)
+    return json.loads(data.text)
 
 # Input the return value from latlng to this function to get the first address as a string
 def get_first_address(data):
     json_response = json.loads(data)
     first_address = json_response['results'][0]['formatted_address']
+    return first_address
+
+output = latlng(40,-120)
+officials = output['officials']
+#for official in officials:
+#    pass
+print(len(officials))
