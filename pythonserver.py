@@ -63,4 +63,4 @@ def get_serialized_data(data):
         official_dict['phone_number'] = official['office_location']['phone_1']
         official_dict['state'] = official['office_details']['district']['state']
         officials_data.append(official_dict)
-    return officials_data
+    return json.dumps(officials_data)
